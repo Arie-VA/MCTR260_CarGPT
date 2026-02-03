@@ -1,4 +1,4 @@
-# MCTR_260_CarGPT, AI Enhanced Control System Project
+# MCTR260_CarGPT, AI Enhanced Control System Project
 
 
 
