@@ -60,12 +60,20 @@
         "*.asset": "yaml",
         "*.meta": "yaml",
         "*.prefab": "yaml",
+<<<<<<< HEAD
         "*.unity": "yaml"
+=======
+        "*.unity": "yaml",
+>>>>>>> arena
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
+<<<<<<< HEAD
     "dotnet.defaultSolution": "CarGPT.slnx"
+=======
+    "dotnet.defaultSolution": "My project (1).slnx"
+>>>>>>> arena
 }

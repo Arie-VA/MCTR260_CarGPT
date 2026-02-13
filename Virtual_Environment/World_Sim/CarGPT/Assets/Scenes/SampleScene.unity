@@ -119,6 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+<<<<<<< HEAD
 --- !u!1 &250227355
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +151,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 662683715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+=======
+>>>>>>> arena
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,6 +469,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ground map
       objectReference: {fileID: 0}
+<<<<<<< HEAD
     - target: {fileID: 919132149155446097, guid: 03bbdd2642ed53140a4b38239bfbe324, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -474,6 +478,8 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+=======
+>>>>>>> arena
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -488,6 +494,7 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1318630258}
   m_SourcePrefab: {fileID: 100100000, guid: 03bbdd2642ed53140a4b38239bfbe324, type: 3}
+<<<<<<< HEAD
 --- !u!1 &649394054
 GameObject:
   m_ObjectHideFlags: 0
@@ -587,6 +594,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 662683715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+=======
+>>>>>>> arena
 --- !u!1 &1318630254 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 03bbdd2642ed53140a4b38239bfbe324, type: 3}
@@ -676,6 +685,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1318630254}
   m_Mesh: {fileID: -2432090755550338912, guid: 03bbdd2642ed53140a4b38239bfbe324, type: 3}
+<<<<<<< HEAD
 --- !u!1 &1374267434
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,6 +834,8 @@ MonoBehaviour:
   jobC:
     pickup: {fileID: 1374267435}
     dropoff: {fileID: 649394055}
+=======
+>>>>>>> arena
 --- !u!1 &1830226612
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,7 +850,10 @@ GameObject:
   - component: {fileID: 1830226614}
   - component: {fileID: 1830226613}
   - component: {fileID: 1830226618}
+<<<<<<< HEAD
   - component: {fileID: 1830226619}
+=======
+>>>>>>> arena
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -973,13 +988,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1830226612}
+<<<<<<< HEAD
   m_Enabled: 0
+=======
+  m_Enabled: 1
+>>>>>>> arena
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f85d0a681ecd75441970f1dbff3a7b3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OmniDirectionalMovement
   speed: 2
   character: {fileID: 0}
+<<<<<<< HEAD
 --- !u!114 &1830226619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -998,6 +1018,8 @@ MonoBehaviour:
   L: 0.5
   W: 0.4
   R: 0.05
+=======
+>>>>>>> arena
 --- !u!1 &2007869560
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,5 +1060,8 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 2007869561}
   - {fileID: 1830226617}
+<<<<<<< HEAD
   - {fileID: 1798554490}
   - {fileID: 662683715}
+=======
+>>>>>>> arena
