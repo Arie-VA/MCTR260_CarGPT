@@ -2,19 +2,40 @@
 Time spent actually "coding": <1%
 Time spent networking: way too much
 
-For this module I had to download python and setup a venv environment, activate the environment (venv/Scripts/activate.bat in command prompt), then install ultralytics, opencv-python, opencv-contrib-python, and roslibpy with pip. Four 4x4 ArUco markers are needed as well, to be placed in the corners of the environment for use in calibration. You will also need to, using Windows Subsystem for Linux, install Ubuntu 22.04 and an insane amount of ROS stuff. Unity will need to be configured to communicate with ROS. All terminal commands are provided (I think?). It will take some time.
+For this module I had to download python (go to the python website and download python) and setup a venv environment, activate the environment (venv/Scripts/activate.bat in command prompt), then install ultralytics, opencv-python, opencv-contrib-python, and roslibpy with pip. Four 4x4 ArUco markers are needed as well, to be placed in the corners of the environment for use in calibration. You will also need to, using Windows Subsystem for Linux, install Ubuntu 22.04 and an insane amount of ROS stuff. Unity will need to be configured to communicate with ROS. All terminal commands are provided (I think?). It will take some time.
 
 For running this code, on an already configured machine and an already configured Unity project, you need to run these commands:
 
 On windows, if you're using WSL as outlined in this README, get your Ubuntu hostname and save it for use in Perception.py, either during runtime or by hardcoding it into the initialization of the ArenaTracker class.
 
 For the ROS-TCP-Unity connection, in an Ubuntu terminal:
-source ~/unity_ros_ws/install/setup.bash (Skip potentially if you ran the echo command)
-ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=<YOUR_UBUNTU_IP>
+
+**source ~/unity_ros_ws/install/setup.bash** (Skip potentially if you ran the echo command)
+
+**ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=<YOUR_UBUNTU_IP>**
 
 For Python Rosbridge, in another Ubuntu terminal:
-ros2 run rosbridge_server rosbridge_websocket
-UNNECESSARY: can setup a debug listener on the rosbridge connection, after python code is run, with: ros2 topic echo /arena/detections
+
+**ros2 run rosbridge_server rosbridge_websocket**
+
+UNNECESSARY: can setup a debug listener on the rosbridge connection, after python code is run, with: **ros2 topic echo /arena/detections**
+
+
+
+
+To make the venv python environment (where the Python scripts are in), go into the folder you want to make the environment in (In this case I did it in the "Perception"), and do:
+
+**python -m venv venv**
+
+**venv\Scripts\activate**
+
+**source venv/bin/activate** <-- For this line, you might need to do .venv/bin/activate or something, it has to do with permissions. You just need to run the activate.bat file in that directory to get the terminal working in the venv environment.
+
+**pip install opencv-python ultralytics**
+
+**pip install roslibpy**
+
+Then put perception.py in there and that should be everything it needs.
 
 ## Perception.py
 The Perception.py script relies HEAVILY on the aforementioned libraries (ultralytics, opencv) to do pretty much everything. Honestly, I wish there was more to say, it's just organizing function calls and storing them as variables and calling them as needed. Most lines are commented, but I'll explain the general flow:

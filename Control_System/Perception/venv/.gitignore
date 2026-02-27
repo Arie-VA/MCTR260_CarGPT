@@ -1,0 +1,6 @@
+include/
+Lib/
+Scripts/
+Share/
+pyvenv.cfg
+yolov8n.pt
