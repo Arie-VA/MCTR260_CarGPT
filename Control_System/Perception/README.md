@@ -28,10 +28,11 @@ To make the venv python environment (where the Python scripts are in), go into t
 **python -m venv venv**
 
 **venv\Scripts\activate**
-
 **source venv/bin/activate** <-- For this line, you might need to do .venv/bin/activate or something, it has to do with permissions. You just need to run the activate.bat file in that directory to get the terminal working in the venv environment.
 
 **pip install opencv-python ultralytics**
+
+**pip install opencv-contrib-python**
 
 **pip install roslibpy**
 
