@@ -8,9 +8,9 @@ class ArenaTracker:
     def __init__(self, camera_index = 0):
         
         # Set self.debug to be 1 to enable debugging mode.
-        self.debug = 0
+        self.debug = 1
         # Set self.test to be 1 to enable no-camera mouse-control mode.
-        self.test = 0
+        self.test = 1
         self.test_corners = []
         
         #Initializing the camera 
@@ -36,8 +36,7 @@ class ArenaTracker:
         # 0,0 is top left
         self.arena_width = 1.0
         self.arena_height = 1.0
-        # List of objects tracked by YOLO. (Currently) approximates position using object coordinates, and deciding if inferred objects are close enough to be an existing object or if its a new one.
-        self.object_list = []
+
         # The Destination Points (Real World)
         # It orders from top left, top right, bottom left, bottom right.
         self.dst_points = np.array([[0,0],[self.arena_width, 0],[0,self.arena_height],[self.arena_width,self.arena_height]],dtype=np.float32)
@@ -68,8 +67,8 @@ class ArenaTracker:
             print("ROS2 Connection Successful.")
         else:
             print("Failed to connect to ROS2. Ensure rosbridge is running.")
+
         
-    def spawn_object(x,y,id):
 
 
     def mouse_callback(self, event, x, y, flags, param):
@@ -80,7 +79,7 @@ class ArenaTracker:
             if len(self.test_corners) < 4:
                 print("Corner %d locked at (%d, %d)" % (len(self.test_corners), x, y))
                 self.test_corners.append([x,y])
-            else:
+            # Need to write an else statement that spawns an object in test mode.
 
         
 
@@ -209,8 +208,8 @@ class ArenaTracker:
                 else:
                     cv2.putText(frame, "Searching for Markers 0-3 ...", (20,50), cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
             
-            else:
-                if self.test == 0:
+            else: # calibration is complete.
+                if self.test == 0: # Infer with model, do object tracking, use ROS.
                     # If we make it into this block, calibration is complete.
                     # Run an inference on the frame.
                     results = self.model(frame,verbose = False, conf = 0.5)
@@ -238,14 +237,14 @@ class ArenaTracker:
                         # Draw on the frame.
                         # class_name is the type name of the detected object
                         class_name = self.model.names[int(box.cls[0])]
-                        #Draw a bouning box
-                        cv2.rectangle(frame,(x1,y1),(x2,y2),(255,0,0),2)
 
+                        print("Object of type %s detected at (%d, %d)" %(class_name,real_x,real_y))
+
+                        #Draw a bounding box
                         # Display the real-world coordinates
                         label = f"{class_name}: ({real_x:.2f}m, {real_y:.2f}m)"
                         cv2.putText(frame,label,(x1,y1-10),cv2.FONT_HERSHEY_SIMPLEX,0.5,(255,255,0),2)
 
-                        print(f"Object: {class_name} at ({real_x:.2f}m, {real_y:.2f}m)")
 
                     if self.ros_client.is_connected:
                         # Which data gets published?
@@ -258,14 +257,16 @@ class ArenaTracker:
                         # Convert to json and publish through ROS.
                         json_str = json.dumps(data_dict)
                         self.ros_topic.publish(roslibpy.Message({'data':json_str}))
+                
                 else: # Test mode == 1, Not using ROS.
                     mx, my = self.mouse_xy
                     real_mx, real_my = self.pixel_to_meter(mx,my)
                     cv2.circle(frame,(mx,my),5,(0,255,0))
-                    debug_text = f"Mouse: ({real_mx:.2f}m, {real_my:.2f}m)"
-                    print(debug_text)
                     
                     real_x,real_y = self.pixel_to_meter(self.mouse_xy[0],self.mouse_xy[1])
+
+                    print("Mouse detected at (%.4fm, %.4fm)" %(real_x,real_y))
+
                     if self.ros_client.is_connected:
                         # Which data gets published?
                         data_dict = {
@@ -301,3 +302,45 @@ if __name__ == "__main__":
         tracker.run()
     except Exception as e:
         print(f"Error: {e}")
+
+
+
+
+"""
+
+DEPRECATED TRACKING CODE
+
+in def run:
+        # DEPRECATED: List of objects tracked by YOLO. (Currently) approximates position using object coordinates, and deciding if inferred objects are close enough to be an existing object or if its a new one.
+        # self.object_list = []
+
+
+def object_tracking(self,x,y,objtype):
+        indices = [i for i,sublist in enumerate(self.object_list) if objtype in sublist]
+        distances = []
+        if len(self.object_list) != 0:
+            for i in indices:
+                real_x,real_y = self.pixel_to_meter(x,y)
+                distances.append([math.sqrt((real_x - self.object_list[i][0])^2 + (real_y - self.object_list[i][1])^2)])
+
+        if len(distances) != 0:
+            if min(distances) <= 0.05:
+                index = indices[min(distances)]
+                self.object_list[index][0] = x
+                self.object_list[index][1] = y
+                print("Object of type %s and ID %d tracked at (%d, %d)" %(objtype,self.object_list[index][4], x, y))
+            
+        else: # Since the object isn't within 50mm of a previously tracked object, it treats it as a new one.
+            self.new_object(x,y,objtype)
+            
+
+    def new_object(self,x,y,objtype):
+        # Put a new object into object_list.
+        count = 0
+        if len(self.object_list) != 0:
+            for i in self.object_list:
+                if i[2] == objtype:
+                    count += 1
+        self.object_list.append([x,y,objtype,count])
+        print("New Object of type %s detected at (%d, %d), given ID %d" %(objtype,x,y,self.object_list[-1][3]))
+"""
