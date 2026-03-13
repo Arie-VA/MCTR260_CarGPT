@@ -13,7 +13,7 @@ public class ControlConfig
 
     [Header("Usable Speed Range")]
     [Range(0.1f, 1.0f)]
-    public float usableMaxSpeed = 0.1f; // precent between 0 and 1
+    public float usableMaxSpeed = 0.3f; // precent between 0 and 1
 
     [Header("Acceleration Scaling")]
     public float accelTimeToMaxSpeed = 0.5f;

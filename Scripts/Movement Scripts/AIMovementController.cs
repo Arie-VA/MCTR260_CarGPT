@@ -9,16 +9,19 @@ public class AIMovementController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        Debug.Log($"usableMaxSpeed on awake: {controlConfig.usableMaxSpeed}");
     }
 
     void FixedUpdate()
     {
-        float usableMaxSpeed = controlConfig.usableMaxSpeed;
+        float usableSpeed = (float)controlConfig.usableMaxSpeed;
         rb.WakeUp();
         // Compute local-frame velocity in world coordinates
-        Vector3 worldVel = transform.right * _vx * usableMaxSpeed
-                       + transform.forward * _vy * usableMaxSpeed;
+        Vector3 worldVel = transform.right * _vx * usableSpeed
+                       + transform.forward * _vy * usableSpeed;
 
+        Debug.Log($"_vx: {_vx} _vy: {_vy} worldvel.x {worldVel.x}, worldvel.z {worldVel.z} useSpeed: {usableSpeed}");
+    
         // Preserve Y (gravity) velocity
         rb.linearVelocity = new Vector3(worldVel.x, rb.linearVelocity.y, worldVel.z);
 

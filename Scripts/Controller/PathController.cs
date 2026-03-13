@@ -101,7 +101,6 @@ public class PathController : MonoBehaviour
     );
 
     
-    Debug.Log($"desiredOmega: {targetWaypoint.desiredOmega} currentHeading: {currentHeading} ");
     return new VelocityOutput { vx = vx, vy = vy, omega = omega };
     }
 

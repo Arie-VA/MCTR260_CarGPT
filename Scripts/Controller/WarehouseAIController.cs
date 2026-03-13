@@ -73,6 +73,7 @@ public class WarehouseAIController : MonoBehaviour
 
             destination = result.Value.centroid;
             currentTargetZone = result.Value.zoneDesignation;
+            Debug.Log($"[warehouseAI]currentTargetZone: {currentTargetZone}");
         }
         else
         {
@@ -151,8 +152,16 @@ public class WarehouseAIController : MonoBehaviour
     // ─────────────────────────────────────────────
     private void Pickup()
     {
-        // Enable PPO pickup model
-        // On pickup complete: set hasObjects = true, atTarget = false
+        //Enable and call the PPO pickup model
+        // void all other function until complete
+        // TODO: update from just setting to tru, actual pickup boxes and balls
+        hasTarget = false;
+        atTarget = false;
+        hasObjects = true;
+        Debug.LogWarning($"Pickup AI not available, sending to dropoff. hastarget = {hasTarget} atTarget: {atTarget} hasObjects: {hasObjects}");
+
+
+        
     }
 
     private void Dropoff()
