@@ -3,6 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 import roslibpy
 import json
+import math
 
 class ArenaTracker:
     def __init__(self, camera_index = 0):
@@ -31,6 +32,7 @@ class ArenaTracker:
         # ArUco setup:
         self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
         self.aruco_params = cv2.aruco.DetectorParameters()
+        self.robot_marker_id = 4
 
         # Arena Real-World Dimensions (Meters)
         # 0,0 is top left
@@ -213,6 +215,22 @@ class ArenaTracker:
                     # If we make it into this block, calibration is complete.
                     # Run an inference on the frame.
                     results = self.model(frame,verbose = False, conf = 0.5)
+                    
+                    # Calculating robot position: Use aruco just like before. Use ID = 4 for the robot
+                    corners, ids, rejected = self.aruco.detectMarkers(frame, self.aruco_dict, paramters=self.aruco_params)
+                    if (ids is not None)and(self.robot_marker_id in ids):
+                        index = np.where(ids == self.robot_marker_id)[0][0]
+                        c = corners[index][0]
+                        cx = np.mean(c[:,0])
+                        cy = np.mean(c[:,1])
+                        robx,roby = self.pixel_to_meter(cx,cy)
+                        fx = int((c[0][0] + c[1][0])/2)
+                        fy = int((c[0][1] + c[1][1])/2)
+                        angle = math.atan2(fy - cy, fx - cx)
+                        angle = math.degrees(angle)
+                        cv2.circle(frame, (cx,cy), 3, (0,255,0))
+                        cv2.line(frame, (cx,cy), (fx,fy), (0,255,0), 3)
+
 
                     if self.debug == 1:
                         mx, my = self.mouse_xy
@@ -248,11 +266,14 @@ class ArenaTracker:
 
                     if self.ros_client.is_connected:
                         # Which data gets published?
-                        data_dict = {
-                            "label": class_name,
-                            "x": float(real_x),
-                            "y": float(real_y)
-
+                        data_dict = { # CURRENTLY: Will not publish YOLO data.
+                            # Even if it did, it owuld only publish the last detected 
+                            # "label": class_name,
+                            # "x": float(real_x),
+                            # "y": float(real_y)
+                            "Robot X": float(robx),
+                            "Robot Y": float(roby),
+                            "Orientation": float(angle)
                         }
                         # Convert to json and publish through ROS.
                         json_str = json.dumps(data_dict)
