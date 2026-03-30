@@ -6,9 +6,9 @@ using RosMessageTypes.Std;
 public class DetectionData
 {
     // This class matches the data published by Perception.py to the /arena/detections message.
-    public string label;
-    public float x;
-    public float y;
+    public float angle;
+    public float robx;
+    public float roby;
 
 }
 
@@ -56,9 +56,9 @@ public class ArenaSubscriber : MonoBehaviour
 
         // Map the coordinates. Python sends 2d (x, y) while Unity uses 3d (x,y,z). The real x is the Unity X, the real y is the unity z.
         // We set the y coordinate to be just a bit above the floor.
-        Vector3 targetPosition = new Vector3(data.x,0.05f,data.y);
+        Vector3 targetPosition = new Vector3(data.robx,0.05f,data.roby);
         currentTrackedObject.transform.localPosition = targetPosition;
-        // Unnecessary: Update the name
-        currentTrackedObject.name = "Detected: " + data.label;
-    }
+        // Update the rotation of the robot
+        currentTrackedObject.transform.localRotation = Quaternion.Euler(0f, -data.angle, 0f);
+        }
 }

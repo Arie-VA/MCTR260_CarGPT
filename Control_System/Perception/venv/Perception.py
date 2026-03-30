@@ -8,10 +8,10 @@ import math
 class ArenaTracker:
     def __init__(self, camera_index = 0):
         
-        # Set self.debug to be 1 to enable debugging mode.
-        self.debug = 1
+        # Set self.debug to be 1 to enable debugging mode. Prints the mouse position relative to the coordinate system.
+        self.debug = 0
         # Set self.test to be 1 to enable no-camera mouse-control mode.
-        self.test = 1
+        self.test = 0
         self.test_corners = []
         
         #Initializing the camera 
@@ -23,7 +23,6 @@ class ArenaTracker:
                 raise ValueError(f"Could not open video device {camera_index}")
 
         # Loading the YOLO model. Initially, trying to use the premade model yolov8n.pt, which will autodownload. Very small and fast.
-        # The model is loaded to the object, self.
         if self.test == 0:
             print("Loading YOLO...")
             self.model = YOLO('yolov8n.pt')
@@ -54,7 +53,7 @@ class ArenaTracker:
         # Picking an IP address:
         skipstep = 1
         if skipstep == 1:
-            UbuntuIP = '172.19.211.21' #Laptop Currently
+            UbuntuIP = '172.19.211.125' #Desktop Currently
         else:
             UbuntuIP = input("Enter the Linux IP that ROS is running on (Ubuntu Terminal from README): ")
         
@@ -217,19 +216,22 @@ class ArenaTracker:
                     results = self.model(frame,verbose = False, conf = 0.5)
                     
                     # Calculating robot position: Use aruco just like before. Use ID = 4 for the robot
-                    corners, ids, rejected = self.aruco.detectMarkers(frame, self.aruco_dict, paramters=self.aruco_params)
+                    robx, roby, angle = 0.0, 0.0, 0.0
+                    corners, ids, rejected = cv2.aruco.detectMarkers(frame, self.aruco_dict, parameters=self.aruco_params)
                     if (ids is not None)and(self.robot_marker_id in ids):
-                        index = np.where(ids == self.robot_marker_id)[0][0]
+                        index = np.where(ids.flatten() == self.robot_marker_id)[0][0]
                         c = corners[index][0]
                         cx = np.mean(c[:,0])
                         cy = np.mean(c[:,1])
                         robx,roby = self.pixel_to_meter(cx,cy)
                         fx = int((c[0][0] + c[1][0])/2)
                         fy = int((c[0][1] + c[1][1])/2)
-                        angle = math.atan2(fy - cy, fx - cx)
+                        real_fx, real_fy = self.pixel_to_meter(fx,fy)
+                        angle = math.atan2(real_fy - roby, real_fx - robx)
                         angle = math.degrees(angle)
-                        cv2.circle(frame, (cx,cy), 3, (0,255,0))
-                        cv2.line(frame, (cx,cy), (fx,fy), (0,255,0), 3)
+                        cv2.circle(frame, (int(cx),int(cy)), 3, (0,255,0))
+                        cv2.line(frame, (int(cx),int(cy)), (int(fx),int(fy)), (0,255,0), 3)
+                        print("Robot at (%.2f, %.2f) at angle %d" %(robx,roby,angle))
 
 
                     if self.debug == 1:
@@ -267,13 +269,13 @@ class ArenaTracker:
                     if self.ros_client.is_connected:
                         # Which data gets published?
                         data_dict = { # CURRENTLY: Will not publish YOLO data.
-                            # Even if it did, it owuld only publish the last detected 
+                            # Even if it did, it owuld only publish the last detected - would have to fix for multiple objects tracking.
                             # "label": class_name,
                             # "x": float(real_x),
                             # "y": float(real_y)
-                            "Robot X": float(robx),
-                            "Robot Y": float(roby),
-                            "Orientation": float(angle)
+                            "robx": float(robx),
+                            "roby": float(roby),
+                            "angle": float(angle)
                         }
                         # Convert to json and publish through ROS.
                         json_str = json.dumps(data_dict)
@@ -319,7 +321,7 @@ class ArenaTracker:
 
 if __name__ == "__main__":
     try:
-        tracker = ArenaTracker(camera_index = 0) # Change this index to go through system cameras.
+        tracker = ArenaTracker(camera_index = 1) # Change this index to go through system cameras.
         tracker.run()
     except Exception as e:
         print(f"Error: {e}")
