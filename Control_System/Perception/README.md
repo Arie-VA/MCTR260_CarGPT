@@ -20,15 +20,16 @@ For Python Rosbridge, in another Ubuntu terminal:
 
 UNNECESSARY: can setup a debug listener on the rosbridge connection, after python code is run, with: **ros2 topic echo /arena/detections**
 
-
+group 3 gave us extra batteries, have to return 4
 
 
 To make the venv python environment (where the Python scripts are in), go into the folder you want to make the environment in (In this case I did it in the "Perception"), and do:
+NOTE: This setup is NOT compatible with mingw python, only the base windows distribution.
 
 **python -m venv venv**
 
 **venv\Scripts\activate**
-**source venv/bin/activate** <-- For this line, you might need to do .venv/bin/activate or something, it has to do with permissions. You just need to run the activate.bat file in that directory to get the terminal working in the venv environment.
+**source venv/Scripts/activate** <-- For this line, you might need to do .venv/bin/activate or something, it has to do with permissions. You just need to run the activate.bat file in that directory to get the terminal working in the venv environment. On Aries computer, I had to go into the scripts directory and do ./Activate.ps1
 
 **pip install opencv-python ultralytics**
 
