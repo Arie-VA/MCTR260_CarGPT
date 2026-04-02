@@ -1,41 +1,54 @@
 using UnityEngine;
 
+// vx/vy arrive normalized [-1, 1].
+// Physics velocity = normalized * MaxLinearSpeed (m/s).
+
 [RequireComponent(typeof(Rigidbody))]
 public class AIMovementController : MonoBehaviour
 {
     private Rigidbody rb;
-    public ControlConfig controlConfig;
+    public RobotConfig controlConfig;
+
     private float _vx, _vy, _omega;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        Debug.Log($"usableMaxSpeed on awake: {controlConfig.usableMaxSpeed}");
     }
 
     void FixedUpdate()
     {
-        float usableSpeed = (float)controlConfig.usableMaxSpeed;
-        rb.WakeUp();
-        // Compute local-frame velocity in world coordinates
-        Vector3 worldVel = transform.right * _vx * usableSpeed
-                       + transform.forward * _vy * usableSpeed;
+        float speed = controlConfig.MaxSpeed;
 
-        Debug.Log($"_vx: {_vx} _vy: {_vy} worldvel.x {worldVel.x}, worldvel.z {worldVel.z} useSpeed: {usableSpeed}");
-    
-        // Preserve Y (gravity) velocity
-        rb.linearVelocity = new Vector3(worldVel.x, rb.linearVelocity.y, worldVel.z);
+        // 🔹 Normalize input to prevent faster diagonal movement
+        Vector3 input = new Vector3(_vx, 0f, _vy);
+        input = Vector3.ClampMagnitude(input, 1f);
 
-        // Apply rotation
-        rb.angularVelocity = new Vector3(0f, _omega * 2, 0f);
-        //rb.angularVelocity = new Vector3(0f, 3f, 0f);  // 3 rad/s
+        // 🔹 Convert to world-space movement
+        Vector3 worldMove =
+            transform.right   * input.x +
+            transform.forward * input.z;
 
+        Vector3 worldVel = worldMove * speed;
+
+        // 🔹 Apply velocity (preserve vertical velocity for gravity)
+        rb.linearVelocity = new Vector3(
+            worldVel.x,
+            rb.linearVelocity.y,
+            worldVel.z
+        );
+
+        // 🔹 Apply rotation (yaw only)
+        rb.angularVelocity = new Vector3(0f, _omega, 0f);
+
+        Debug.Log($"[AIMovementController] vx={_vx:F2}, vy={_vy:F2}, omega={_omega:F2} " +
+                  $"=> worldVel=({worldVel.x:F2}, {worldVel.y:F2}, {worldVel.z:F2})");
     }
 
     public void ApplyVelocity(VelocityOutput velocity)
     {
-        // vx = forward, vy = sideways relative to robot
-        _vx = velocity.vx;
-        _vy = velocity.vy;
+        _vx    = velocity.vx;
+        _vy    = velocity.vy;
         _omega = velocity.omega;
     }
 }
