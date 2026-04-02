@@ -91,6 +91,12 @@ public class WarehouseAIController : MonoBehaviour
         atTarget             = false;
         _stepperActive       = false;
         _stepperCompleteTime = 0f;
+
+        if (manualController != null)
+        {
+            manualController.IsOverrideActive = true;
+            Debug.Log("[AI] Starting in MANUAL mode");
+        }
         Debug.LogError($"HasTarget {hasTarget}; pathLoaded = {pathLoaded}, hasObjects {hasObjects}");
     }
 
@@ -106,9 +112,14 @@ public class WarehouseAIController : MonoBehaviour
         UpdateFromPerception();
         ApplySmoothingInControlLoop();
 
+
         // 1. MANUAL OVERRIDE (High priority)
         if (manualController != null && manualController.IsOverrideActive)
+        {
+            hasObjects = false; // Force AI to ignore current state and just do what manual commands say
             return;
+        }
+            
 
         // 2. PLAYBACK DRIVE (The missing link)
         if (manualRecorder != null && manualRecorder.IsPlaying)
@@ -125,7 +136,7 @@ public class WarehouseAIController : MonoBehaviour
 
         // --- DEBUG: Recording/Playback Keyboard Controls ---
         UpdateDebugPlayback();
-
+        Debug.LogWarning($"[AI] State | hasObjects: {hasObjects} | hasTarget: {hasTarget} | atTarget: {atTarget} | stepperActive: {_stepperActive} | usingRecording: {_isUsingRecording}");
         // 3. NORMAL AI STATE MACHINE
         if      (!hasTarget && !atTarget)      Pathing();
         else if ( hasTarget && !atTarget)      Moving2Target();
@@ -154,7 +165,7 @@ public class WarehouseAIController : MonoBehaviour
                 1 => pickupZone1,
                 2 => pickupZone2,
                 3 => pickupZone3,
-                _ => null
+                _ => pickupZone1 // Default to zone 1 if something goes wrong
             };
 
             if (pickupTransform == null)
@@ -173,7 +184,7 @@ public class WarehouseAIController : MonoBehaviour
                 1 => dropoffZone1,
                 2 => dropoffZone2,
                 3 => dropoffZone3,
-                _ => null
+                _ => pickupZone1 // Default to zone 1 if something goes wrong
             };
 
             if (dropoff == null)
@@ -196,6 +207,7 @@ public class WarehouseAIController : MonoBehaviour
         currentPath = path;
         hasTarget   = true;
         pathLoaded  = false;
+ 
 
         Debug.LogError($"HasTarget {hasTarget}; pathLoaded = {pathLoaded}, hasObjects {hasObjects}");
         Debug.LogWarning("Pathing complete - should happen once per trip");
@@ -246,6 +258,11 @@ public class WarehouseAIController : MonoBehaviour
     // ─────────────────────────────────────────────
     private void Pickup()
     {
+        Debug.LogWarning("Starting Pickup sequence...");
+        if (currentTargetZone == 0) 
+        {
+            currentTargetZone = 1; // Default to zone 1 if something goes wrong
+        }
         // 1. STARTING PHASE
         if (!_stepperActive)
         {
@@ -541,4 +558,6 @@ public class WarehouseAIController : MonoBehaviour
         while (manualRecorder.IsPlaying)
             yield return null;
     }
+
+
 }

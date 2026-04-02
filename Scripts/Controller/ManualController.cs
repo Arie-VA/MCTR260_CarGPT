@@ -21,7 +21,7 @@ public class ManualController : MonoBehaviour
     public WarehouseAIController warehouseAI;
     public RobotUDPSender        udpSender;
 
-    public bool IsOverrideActive { get; private set; } = false;
+    public bool IsOverrideActive { get; set; } = false;
 
     private AIMovementController _movement;
     private Gamepad              _pad;
